@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class UpdateAmmoCount : MonoBehaviour
+public class UpdateMoveCount : MonoBehaviour
 {
     private Text _text;
 
@@ -14,6 +14,6 @@ public class UpdateAmmoCount : MonoBehaviour
     {
         var soldier = GameLogic.Instance.Selected;
         if (soldier != null)
-            _text.text = soldier.AmmoCount.ToString();
+            _text.text = soldier.MoveCount.ToString();
     }
 }

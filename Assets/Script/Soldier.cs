@@ -4,19 +4,22 @@ using System.Collections;
 public class Soldier : MonoBehaviour
 {
     public static int MaxAmmo = 90;
+    public static int MaxMove = 3;
 
-    public float Speed = 10;
-    public float Range = 5;
-    public float RateOfFire = 0.5f;
-    public int AmmoCount;
+    public float    Speed = 10;
+    public float    Range = 5;
+    public float    RateOfFire = 0.5f;
+    public int      AmmoCount;
+    public int      MoveCount;
 
-    private Transform _target;
-    private Light _muzzleFlash;
-    private GameObject _info;
+    private Transform   _target;
+    private Light       _muzzleFlash;
+    private GameObject  _info;
 
     void Start()
     {
         AmmoCount = MaxAmmo;
+        MoveCount = MaxMove;
         _muzzleFlash = GetComponentInChildren<Light>();
         _info = GetComponentInChildren<Canvas>().gameObject;
         _info.SetActive(false);

@@ -21,11 +21,25 @@ public class GameLogic : MonoBehaviour
 
     public LayerMask    CoversLayer;
     public LayerMask    UnitsLayer;
+    public GameObject   SoldierInfo;
 
     private CameraBehaviour _camera;
-    private Soldier         _selected;
     private AliensSpawner   _spawner;
     private bool            _assaultStarted = false;
+
+    private Soldier _selected;
+    public Soldier Selected
+    {
+        get { return _selected; }
+        private set
+        {
+            if (_selected == value)
+                return;
+
+            SoldierInfo.SetActive(value != null);
+            _selected = value;
+        }
+    }
 
     public bool Assault { get { return _spawner.AreAliensActive; } }
 
@@ -42,6 +56,7 @@ public class GameLogic : MonoBehaviour
         Random.seed = (int) Time.realtimeSinceStartup;
         _camera = Camera.main.GetComponent<CameraBehaviour>();
         _spawner = GameObject.FindGameObjectWithTag("AliensSpawner").GetComponent<AliensSpawner>();
+        SoldierInfo.SetActive(false);
 	}
 	
 	void Update ()
@@ -52,29 +67,24 @@ public class GameLogic : MonoBehaviour
             _assaultStarted = false;
         }
 
-        if (!Assault && Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, UnitsLayer))
             {
-                if (_selected != null)
-                    _selected.SetInfoVisibility(false);
+                if (Selected != null)
+                    Selected.SetInfoVisibility(false);
 
                 var collider = hit.collider;
-                _selected = collider.GetComponent<Soldier>();
-                _selected.SetInfoVisibility(true);
+                Selected = collider.GetComponent<Soldier>();
+                Selected.SetInfoVisibility(true);
             }
-            else if (_selected != null && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, CoversLayer))
+            else if (!Assault && Selected != null && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, CoversLayer))
             {
                 var collider = hit.collider;
                 Vector3 target;
                 if (IsAnySlotFree(collider.transform, out target))
-                    StartMovingSoldier(_selected.transform, target);
-            }
-            else if (_selected != null)
-            {
-                _selected.SetInfoVisibility(false);
-                _selected = null;
+                    StartMovingSoldier(Selected.transform, target);
             }
         }
 	}
