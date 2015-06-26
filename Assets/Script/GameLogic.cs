@@ -17,7 +17,8 @@ public class GameLogic : MonoBehaviour
 
     #endregion
 
-    public static float[] Lanes = { -2.6f, 0, 2.6f };
+    public static float[]   Lanes = { -2.6f, 0, 2.6f };
+    public static float     RangeBetweenCovers = 5.35f;
 
     public LayerMask    CoversLayer;
     public LayerMask    UnitsLayer;
@@ -82,9 +83,7 @@ public class GameLogic : MonoBehaviour
             else if (!Assault && Selected != null && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, CoversLayer))
             {
                 var collider = hit.collider;
-                Vector3 target;
-                if (IsAnySlotFree(collider.transform, out target))
-                    StartMovingSoldier(Selected.transform, target);
+                StartMovingSoldier(Selected.transform, collider.gameObject);
             }
         }
 	}
@@ -95,15 +94,15 @@ public class GameLogic : MonoBehaviour
         _assaultStarted = true;
     }
 
-    public void StartMovingSoldier(Soldier soldier, Vector3 target, bool cameraFollow = true)
+    public void StartMovingSoldier(Soldier soldier, GameObject cover, bool cameraFollow = true)
     {
         _camera.Target = soldier.transform;
-        soldier.StartMoving(target);
+        soldier.StartMoving(cover);
     }
 
-    public void StartMovingSoldier(Transform soldier, Vector3 target, bool cameraFollow = true)
+    public void StartMovingSoldier(Transform soldier, GameObject cover, bool cameraFollow = true)
     {
-        StartMovingSoldier(soldier.GetComponent<Soldier>(), target, cameraFollow);
+        StartMovingSoldier(soldier.GetComponent<Soldier>(), cover, cameraFollow);
     }
 
     public bool IsAnySlotFree(Transform cover, out Vector3 target)

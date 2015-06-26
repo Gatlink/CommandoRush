@@ -20,7 +20,7 @@ public class Alien : MonoBehaviour
         if (Waypoints == null)
         {
             var objs = GameObject.FindGameObjectsWithTag("Waypoint");
-            Waypoints = objs.Select(o => o.transform.position).OrderBy(t => t.z).Reverse().ToArray();
+            Waypoints = objs.Select(o => o.transform.position).OrderByDescending(t => t.z).ToArray();
         }
     }
 

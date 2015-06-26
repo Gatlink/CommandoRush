@@ -10,7 +10,7 @@ public class MobileCommandCenter : MonoBehaviour
     public int SoldierPerUnit = 4;
     public float TimeBetweenSpawn = 0.5f;
 
-    private Transform[] _covers;
+    private GameObject[] _covers;
     private Button[] _orderButtons;
 
     void Start()
@@ -20,11 +20,11 @@ public class MobileCommandCenter : MonoBehaviour
 
         GameLogic.Instance.AssaultEnded += ActivateOrderButtons;
 
-        var covers = new List<Transform>();
+        var covers = new List<GameObject>();
         foreach (Transform t in transform)
         {
             if (t.gameObject.layer == LayerMask.NameToLayer("Covers"))
-                covers.Add(t);
+                covers.Add(t.gameObject);
         }
         _covers = covers.ToArray();
 
@@ -62,26 +62,28 @@ public class MobileCommandCenter : MonoBehaviour
 
     private void SpawnSoldier()
     {
-        Vector3 slot;
-        if (!IsAnySlotFree(out slot))
+        GameObject cover;
+        if (!IsAnySlotFree(out cover))
             return;
 
         var soldier = Instantiate(SoldierPrefab);
         soldier.transform.position = transform.position;
-        GameLogic.Instance.StartMovingSoldier(soldier.transform, slot, cameraFollow:false);
+        GameLogic.Instance.StartMovingSoldier(soldier.transform, cover, cameraFollow:false);
     }
 
-    private bool IsAnySlotFree(out Vector3 slot)
+    private bool IsAnySlotFree(out GameObject availableCover)
     {
         foreach (var cover in _covers)
         {
-            if (GameLogic.Instance.IsAnySlotFree(cover, out slot))
+            Vector3 slot;
+            if (GameLogic.Instance.IsAnySlotFree(cover.transform, out slot))
             {
+                availableCover = cover;
                 return true;
             }
         }
 
-        slot = Vector3.zero;
+        availableCover = null;
         return false;
     }
 

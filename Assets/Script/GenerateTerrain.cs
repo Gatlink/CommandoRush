@@ -8,7 +8,6 @@ public class GenerateTerrain : MonoBehaviour
     public GameObject CoverPrefab;
     public GameObject WaypointPrefab; 
     public float Length = 30f;
-    public float RangeBetweenCovers = 5.35f;
 
     private float[] _lanes;
 
@@ -34,11 +33,11 @@ public class GenerateTerrain : MonoBehaviour
 
     private void GenerateCovers()
     {
-        for (var i = 1; i * RangeBetweenCovers < Length; ++i)
+        for (var i = 1; i * GameLogic.RangeBetweenCovers < Length; ++i)
         {
             ShuffleLanes();
 
-            var z = i * RangeBetweenCovers;
+            var z = i * GameLogic.RangeBetweenCovers;
             CreateCover(0, z);
 
             if (Random.Range(0f, 1f) < 0.1f)
