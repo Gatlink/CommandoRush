@@ -9,6 +9,7 @@ public class MobileCommandCenter : MonoBehaviour
     public GameObject SoldierPrefab;
     public int SoldierPerUnit = 4;
     public float TimeBetweenSpawn = 0.5f;
+    public int Armor = 10;
 
     private GameObject[] _covers;
     private Button[] _orderButtons;
@@ -20,15 +21,7 @@ public class MobileCommandCenter : MonoBehaviour
 
         GameLogic.Instance.AssaultEnded += ActivateOrderButtons;
 
-        var covers = new List<GameObject>();
-        foreach (Transform t in transform)
-        {
-            if (t.gameObject.layer == LayerMask.NameToLayer("Covers"))
-                covers.Add(t.gameObject);
-        }
-        _covers = covers.ToArray();
-
-        StartSpawning();
+        Reset();
     }
 
     void Update()
@@ -118,5 +111,25 @@ public class MobileCommandCenter : MonoBehaviour
     {
         foreach (var button in _orderButtons)
             button.interactable = false;
+    }
+
+    public void Hit(int damage)
+    {
+        --Armor;
+        if (Armor <= 0)
+            GameLogic.Instance.EndGame();
+    }
+
+    public void Reset()
+    {
+        var covers = new List<GameObject>();
+        foreach (Transform t in transform)
+        {
+            if (t.gameObject.layer == LayerMask.NameToLayer("Covers"))
+                covers.Add(t.gameObject);
+        }
+        _covers = covers.ToArray();
+
+        StartSpawning();
     }
 }

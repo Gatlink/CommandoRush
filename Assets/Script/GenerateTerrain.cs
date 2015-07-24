@@ -6,7 +6,9 @@ using System.Collections.Generic;
 public class GenerateTerrain : MonoBehaviour
 {
     public GameObject CoverPrefab;
-    public GameObject WaypointPrefab; 
+    public GameObject WaypointPrefab;
+    public Transform AlienSpawner;
+    public Transform Target;
     public float Length = 30f;
 
     private float[] _lanes;
@@ -27,6 +29,9 @@ public class GenerateTerrain : MonoBehaviour
 
         transform.localScale = new Vector3(1, 1, Length / 10f);
         transform.position = new Vector3(0, 0, Length / 2f);
+
+        AlienSpawner.position.Set(0, 0, Length + 10);
+        Target.position.Set(0, 0, Length + 5);
 
         GenerateCovers();
     }

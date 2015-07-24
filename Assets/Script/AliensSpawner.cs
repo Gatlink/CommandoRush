@@ -8,13 +8,17 @@ public class AliensSpawner : MonoBehaviour
 
     public GameObject AlienPrefab;
     public int Count = 10;
+    public float GrowthFactor = 1.1f;
     public float TimeBetweenSpawn = 1;
+
+    private Transform _mcc;
 
     public bool AreAliensActive { get { return transform.childCount > 0; } }
 
     void Start()
     {
         Aliens = new List<Transform>();
+        _mcc = GameObject.FindGameObjectWithTag("MCC").transform;
     }
 
     void LateUpdate()
@@ -23,8 +27,9 @@ public class AliensSpawner : MonoBehaviour
         var newList = new List<Transform>();
         for (var i = aliens.Length - 1; i >= 0; --i)
         {
-            if (aliens[i].GetComponent<Alien>().HitPoints <= 0)
-                Destroy(aliens[i].gameObject);
+            var alien = aliens[i].GetComponent<Alien>();
+            if (alien.Armor <= 0)
+                alien.Die();
             else
                 newList.Add(aliens[i]);
         }
@@ -44,8 +49,10 @@ public class AliensSpawner : MonoBehaviour
         var alien = Instantiate(AlienPrefab);
         var position = transform.position;
         position.x = lane;
+        position.y = alien.transform.localScale.y / 2f;
         alien.transform.position = position;
         alien.transform.parent = transform;
+        alien.GetComponent<Alien>().MCC = _mcc;
         Aliens.Add(alien.transform);
         return alien;
     }
@@ -57,5 +64,12 @@ public class AliensSpawner : MonoBehaviour
             SpawnAlien();
             yield return new WaitForSeconds(TimeBetweenSpawn);
         }
+        Count = (int) Mathf.Floor(Count * GrowthFactor);
+    }
+
+    public void KillEmAll()
+    {
+        foreach (var alien in Aliens)
+            alien.GetComponent<Alien>().Armor = 0;
     }
 }

@@ -7,7 +7,7 @@ public class Soldier : MonoBehaviour
 {
     private static GameObject[] Covers;
 
-    public static int MaxAmmo = 90;
+    public static int MaxAmmo = 60;
     public static int MaxMove = 3;
 
     public float    Speed = 10;
@@ -15,6 +15,7 @@ public class Soldier : MonoBehaviour
     public float    RateOfFire = 0.5f;
     public int      AmmoCount;
     public int      MoveCount;
+    public int      Armor = 5;
 
     private Transform   _target;
     private Light       _muzzleFlash;
@@ -30,11 +31,13 @@ public class Soldier : MonoBehaviour
         }
 
         AmmoCount = MaxAmmo;
-        MoveCount = MaxMove;
+        MoveCount = MaxMove + 1;
         _muzzleFlash = GetComponentInChildren<Light>();
         _info = GetComponentInChildren<Canvas>().gameObject;
         _info.SetActive(false);
         _currentCoverIndex = -1;
+
+        GameLogic.Instance.AssaultEnded += ResetMovement;
     }
 
     void Update()
@@ -84,6 +87,9 @@ public class Soldier : MonoBehaviour
             yield return StartCoroutine(MoveTo(slot));
             --MoveCount;
         }
+
+        if (cover == Covers[Covers.Length - 1])
+            GameLogic.Instance.EndGame();
     }
 
     private Queue<Vector3> BuildPath(GameObject cover)
@@ -200,6 +206,11 @@ public class Soldier : MonoBehaviour
         var diff = target - transform.position;
         diff.y = 0;
         return diff.magnitude;
+    }
+
+    private void ResetMovement()
+    {
+        MoveCount = MaxMove;
     }
 
     #endregion Utils

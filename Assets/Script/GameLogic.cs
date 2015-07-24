@@ -23,6 +23,7 @@ public class GameLogic : MonoBehaviour
     public LayerMask    CoversLayer;
     public LayerMask    UnitsLayer;
     public GameObject   SoldierInfo;
+    public GameObject   GameOverScreen;
 
     private CameraBehaviour _camera;
     private AliensSpawner   _spawner;
@@ -117,5 +118,31 @@ public class GameLogic : MonoBehaviour
         }
         target = Vector3.zero;
         return false;
+    }
+
+    public void EndGame()
+    {
+        Time.timeScale = 0;
+        GameOverScreen.SetActive(true);
+    }
+
+    public void Reset()
+    {
+        GameOverScreen.SetActive(false);
+
+        _spawner.KillEmAll();
+
+        foreach (var soldier in GameObject.FindGameObjectsWithTag("Soldier"))
+            Destroy(soldier);
+
+        var terrain = GameObject.FindGameObjectWithTag("Terrain").GetComponent<GenerateTerrain>();
+        terrain.Reset();
+
+        var mcc = GameObject.FindGameObjectWithTag("MCC").GetComponent<MobileCommandCenter>();
+        mcc.Reset();
+
+        Alien.Waypoints = null;
+
+        Time.timeScale = 1;
     }
 }
