@@ -9,7 +9,7 @@ public class Alien : MonoBehaviour
 {
     public static Vector3[] Waypoints = null;
 
-    public Transform    MCC;
+    public MonoBehaviour MCC;
     public float        Staggering = 1;
     public float        Speed = 15;
     public int          Armor = 3;
@@ -17,10 +17,10 @@ public class Alien : MonoBehaviour
     public float        AttackSpeed = 1;
     public float        Range = 5;
 
-    private int     _lastIdx = 0;
-    private bool    _attacking = false;
-    private float   _lastAttack = 0;
-    private float   _stagger;
+    protected int   _lastIdx = 0;
+    protected bool  _attacking = false;
+    protected float _lastAttack = 0;
+    protected float _stagger;
 
     void Start()
     {
@@ -34,16 +34,16 @@ public class Alien : MonoBehaviour
         }
     }
 
-	void Update ()
+	protected virtual void Update ()
     {
         if (_attacking)
             return;
 
-        if (Vector3.Distance(transform.position, MCC.position) <= Range)
+        if (Vector3.Distance(transform.position, MCC.transform.position) <= Range)
         {
             if (Time.time - _lastAttack >= AttackSpeed)
             {
-                Attack();
+                Attack(MCC);
                 _lastAttack = Time.time;
             }
             return;
@@ -76,16 +76,16 @@ public class Alien : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void Attack()
+    public void Attack(MonoBehaviour target)
     {
-        var direction = MCC.position - transform.position;
+        var direction = target.transform.position - transform.position;
         direction.y = 0;
         direction.Normalize();
         transform.forward = direction;
-        StartCoroutine(AttackAnim());
+        StartCoroutine(AttackAnim(target));
     }
 
-    public IEnumerator AttackAnim()
+    public IEnumerator AttackAnim(MonoBehaviour target)
     {
         _attacking = true;
 
@@ -95,7 +95,8 @@ public class Alien : MonoBehaviour
         // Rush forward
         yield return StartCoroutine(GoThereInTime(transform.forward, 0.1f, 30));
 
-        MCC.GetComponent<MobileCommandCenter>().Hit(Damage);
+        if(target != null)
+            target.SendMessage("Hit", Damage);
 
         // Push back
         yield return StartCoroutine(GoThereInTime(-transform.forward, 0.2f, 15));

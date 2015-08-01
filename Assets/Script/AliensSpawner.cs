@@ -6,7 +6,7 @@ public class AliensSpawner : MonoBehaviour
 {
     public static List<Transform> Aliens;
 
-    public GameObject AlienPrefab;
+    public GameObject[] AlienPrefabs;
     public int Count = 10;
     public float GrowthFactor = 1.1f;
     public float TimeBetweenSpawn = 1;
@@ -46,13 +46,13 @@ public class AliensSpawner : MonoBehaviour
     private GameObject SpawnAlien()
     {
         var lane = GameLogic.Lanes[Random.Range(0, GameLogic.Lanes.Length)];
-        var alien = Instantiate(AlienPrefab);
+        var alien = Instantiate(AlienPrefabs[Random.Range(0, AlienPrefabs.Length)]);
         var position = transform.position;
         position.x = lane;
         position.y = alien.transform.localScale.y / 2f;
         alien.transform.position = position;
         alien.transform.parent = transform;
-        alien.GetComponent<Alien>().MCC = _mcc;
+        alien.GetComponent<Alien>().MCC = _mcc.GetComponent<MobileCommandCenter>();
         Aliens.Add(alien.transform);
         return alien;
     }

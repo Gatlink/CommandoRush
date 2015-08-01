@@ -33,7 +33,7 @@ public class GameLogic : MonoBehaviour
     public Soldier Selected
     {
         get { return _selected; }
-        private set
+        set
         {
             if (_selected == value)
                 return;

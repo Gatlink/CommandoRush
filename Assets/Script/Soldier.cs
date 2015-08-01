@@ -5,10 +5,11 @@ using System.Collections.Generic;
 
 public class Soldier : MonoBehaviour
 {
-    private static GameObject[] Covers;
-
+    public static List<Soldier> All = new List<Soldier>();
     public static int MaxAmmo = 60;
     public static int MaxMove = 3;
+
+    private static GameObject[] Covers;
 
     public float    Speed = 10;
     public float    Range = 5;
@@ -38,6 +39,8 @@ public class Soldier : MonoBehaviour
         _currentCoverIndex = -1;
 
         GameLogic.Instance.AssaultEnded += ResetMovement;
+
+        All.Add(this);
     }
 
     void Update()
@@ -62,6 +65,20 @@ public class Soldier : MonoBehaviour
                 StartCoroutine(Shoot());
                 break;
             }
+        }
+    }
+
+    private void Hit(int damage)
+    {
+        Armor -= damage;
+
+        if (Armor <= 0)
+        {
+            All.Remove(this);
+            Destroy(gameObject);
+
+            if (GameLogic.Instance.Selected == this)
+                GameLogic.Instance.Selected = null;
         }
     }
 
